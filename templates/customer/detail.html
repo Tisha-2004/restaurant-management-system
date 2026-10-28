@@ -1,0 +1,31 @@
+{% extends "admin_base.html" %}
+{% block breadcrumb %}{{ customer.name }}{% endblock %}
+{% block content %}
+<div class="row g-4">
+  <div class="col-lg-4"><div class="card glass-card p-4 text-center">
+    <img class="avatar-lg mx-auto" src="{% if customer.photo %}{{ customer.photo.url }}{% else %}https://ui-avatars.com/api/?name={{ customer.name|urlencode }}&background=FC8019&color=fff&size=128{% endif %}" alt="{{ customer.name }}">
+    <h5 class="fw-bold mt-3 mb-0">{{ customer.name }}</h5>
+    <p class="text-muted-2 small">{{ customer.mobile }}<br>{{ customer.email }}</p>
+    <p class="small">{{ customer.address }}</p>
+    <a class="btn btn-orange btn-sm" href="{% url 'customers:edit' customer.pk %}">Edit</a>
+  </div></div>
+  <div class="col-lg-8">
+    <div class="card glass-card p-3 mb-3">
+      <h6 class="fw-bold">Reservations</h6>
+      <table class="table table-sm align-middle mb-0">
+        <tbody>{% for r in customer.reservations.all %}<tr><td>{{ r.date }} {{ r.time }}</td><td>Table {{ r.table.number }}</td>
+          <td><span class="badge text-bg-{{ r.badge }}">{{ r.get_status_display }}</span></td></tr>
+        {% empty %}<tr><td class="text-muted-2 small">No reservations.</td></tr>{% endfor %}</tbody>
+      </table>
+    </div>
+    <div class="card glass-card p-3">
+      <h6 class="fw-bold">Bills</h6>
+      <table class="table table-sm align-middle mb-0">
+        <tbody>{% for b in customer.bills.all %}<tr><td>{{ b.invoice_number }}</td><td>{{ b.created_at|date:"d M Y" }}</td>
+          <td>₹{{ b.grand_total }}</td><td><span class="badge text-bg-{% if b.payment_status == 'paid' %}success{% else %}warning{% endif %}">{{ b.get_payment_status_display }}</span></td></tr>
+        {% empty %}<tr><td class="text-muted-2 small">No bills.</td></tr>{% endfor %}</tbody>
+      </table>
+    </div>
+  </div>
+</div>
+{% endblock %}

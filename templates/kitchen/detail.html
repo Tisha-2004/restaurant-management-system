@@ -1,0 +1,17 @@
+{% extends "admin_base.html" %}
+{% block breadcrumb %}{{ order.number }}{% endblock %}
+{% block content %}
+<div class="card glass-card p-4" style="max-width:680px">
+  <div class="d-flex justify-content-between">
+    <h4 class="fw-bold">{{ order.number }}</h4>
+    <span class="badge text-bg-{{ order.badge }}">{{ order.get_status_display }}</span>
+  </div>
+  <p class="text-muted-2 small mb-3">{{ order.customer.name }} · {% if order.table %}Table {{ order.table.number }}{% else %}Takeaway{% endif %} · {{ order.created_at|date:"d M Y H:i" }}</p>
+  <table class="table">
+    <thead><tr><th>Item</th><th class="text-end">Qty</th><th class="text-end">Subtotal</th></tr></thead>
+    <tbody>{% for line in order.items.all %}<tr><td>{{ line.item.name }}</td><td class="text-end">{{ line.quantity }}</td><td class="text-end">₹{{ line.subtotal }}</td></tr>{% endfor %}</tbody>
+    <tfoot><tr><th colspan="2" class="text-end">Total</th><th class="text-end">₹{{ order.total }}</th></tr></tfoot>
+  </table>
+  <a class="btn btn-orange" href="{% url 'kitchen:edit' order.pk %}">Edit order</a>
+</div>
+{% endblock %}

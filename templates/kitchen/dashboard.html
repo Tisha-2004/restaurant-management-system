@@ -1,0 +1,39 @@
+{% extends "admin_base.html" %}
+{% block breadcrumb %}Kitchen{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+  <h4 class="fw-bold mb-0"><i class="fa-solid fa-kitchen-set text-orange me-2"></i>Kitchen Dashboard</h4>
+  <div class="d-flex gap-2">
+    <form class="d-flex gap-2"><input class="form-control" name="q" value="{{ query }}" placeholder="Search order / customer"><button class="btn btn-light">Search</button></form>
+    <a class="btn btn-orange" href="{% url 'kitchen:add' %}"><i class="fa-solid fa-plus me-2"></i>New Order</a>
+    <a class="btn btn-light" href="{% url 'kitchen:list' %}">All Orders</a>
+  </div>
+</div>
+<div class="row g-3 kitchen-board">
+  {% for label, orders in columns %}
+  <div class="col-lg-3 col-md-6">
+    <div class="kanban-col">
+      <h6 class="fw-bold text-uppercase small">{{ label }} <span class="badge text-bg-secondary">{{ orders|length }}</span></h6>
+      {% for order in orders %}
+      <div class="kanban-card">
+        <div class="d-flex justify-content-between">
+          <strong>{{ order.number }}</strong>
+          <span class="chip">{% if order.table %}T{{ order.table.number }}{% else %}Takeaway{% endif %}</span>
+        </div>
+        <small class="text-muted-2">{{ order.customer.name }}</small>
+        <ul class="small mt-2 mb-2 ps-3">
+          {% for line in order.items.all %}<li>{{ line.item.name }} × {{ line.quantity }}</li>{% endfor %}
+        </ul>
+        <div class="d-flex flex-wrap gap-1">
+          <a class="btn btn-xs btn-outline-secondary" href="{% url 'kitchen:status' order.pk 'pending' %}">Pending</a>
+          <a class="btn btn-xs btn-outline-warning" href="{% url 'kitchen:status' order.pk 'preparing' %}">Preparing</a>
+          <a class="btn btn-xs btn-outline-info" href="{% url 'kitchen:status' order.pk 'ready' %}">Ready</a>
+          <a class="btn btn-xs btn-outline-success" href="{% url 'kitchen:status' order.pk 'served' %}">Served</a>
+        </div>
+      </div>
+      {% empty %}<p class="small text-muted-2">No orders.</p>{% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

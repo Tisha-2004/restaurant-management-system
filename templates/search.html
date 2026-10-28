@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+{% block title %}Search · {{ site.name }}{% endblock %}
+{% block content %}
+<section class="page-header"><div class="container"><h1>Search</h1><p>Results for "{{ query }}"</p></div></section>
+<section class="container section">
+  <form class="mb-4 d-flex gap-2" method="get">
+    <input class="form-control" name="q" value="{{ query }}" placeholder="Search customers, food, reservations, bills, orders...">
+    <button class="btn btn-orange px-4">Search</button>
+  </form>
+
+  {% if results.foods %}
+    <h5 class="fw-bold mb-3">Food ({{ results.foods|length }})</h5>
+    <div class="row g-3 mb-4">
+      {% for item in results.foods %}
+        <div class="col-lg-3 col-md-6"><div class="food-card h-100">
+          <div class="food-img" style="background-image:url('{{ item.src }}')"><span class="price-tag">₹{{ item.price }}</span></div>
+          <div class="food-body"><h6>{{ item.name }}</h6><a class="btn btn-sm btn-orange" href="{% url 'menu:detail' item.pk %}">View</a></div>
+        </div></div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {% if results.customers %}<h5 class="fw-bold">Customers</h5><ul class="list-group mb-4">{% for c in results.customers %}<li class="list-group-item d-flex justify-content-between"><span>{{ c.name }} · {{ c.mobile }}</span><a href="{% url 'customers:detail' c.pk %}">Open</a></li>{% endfor %}</ul>{% endif %}
+  {% if results.reservations %}<h5 class="fw-bold">Reservations</h5><ul class="list-group mb-4">{% for r in results.reservations %}<li class="list-group-item">{{ r }} · <span class="badge text-bg-{{ r.badge }}">{{ r.get_status_display }}</span></li>{% endfor %}</ul>{% endif %}
+  {% if results.orders %}<h5 class="fw-bold">Orders</h5><ul class="list-group mb-4">{% for o in results.orders %}<li class="list-group-item d-flex justify-content-between"><span>{{ o.number }} · {{ o.customer.name }}</span><span class="badge text-bg-{{ o.badge }}">{{ o.get_status_display }}</span></li>{% endfor %}</ul>{% endif %}
+  {% if results.bills %}<h5 class="fw-bold">Bills</h5><ul class="list-group mb-4">{% for b in results.bills %}<li class="list-group-item d-flex justify-content-between"><span>{{ b.invoice_number }} · {{ b.customer.name }}</span><strong>₹{{ b.grand_total }}</strong></li>{% endfor %}</ul>{% endif %}
+
+  {% if query and not results.foods and not results.customers and not results.reservations and not results.orders and not results.bills %}
+    {% include "_empty.html" with title="No results found" subtitle="Try a different keyword." %}
+  {% endif %}
+</section>
+{% endblock %}

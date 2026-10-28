@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+{% block title %}Gallery · {{ site.name }}{% endblock %}
+{% block content %}
+<section class="page-header"><div class="container"><h1>Gallery</h1><p>Moments from our restaurant</p></div></section>
+<section class="container section">
+  <div class="row g-3">
+    {% for image in gallery %}
+      <div class="col-lg-4 col-md-6"><div class="gallery-tile tall" style="background-image:url('{{ image.src }}')"><span>{{ image.title }}</span></div></div>
+    {% empty %}<div class="col-12">{% include "_empty.html" with title="No photos yet" %}</div>{% endfor %}
+  </div>
+</section>
+{% endblock %}

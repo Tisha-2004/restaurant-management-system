@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Contact · {{ site.name }}{% endblock %}
+{% block content %}
+<section class="page-header"><div class="container"><h1>Contact Us</h1><p>We would love to hear from you</p></div></section>
+<section class="container section">
+  <div class="row g-4">
+    <div class="col-lg-5">
+      <div class="glass-card p-4 h-100">
+        <h5 class="fw-bold mb-3">Reach us</h5>
+        <p class="small"><i class="fa-solid fa-phone text-orange me-2"></i>{{ site.phone }}</p>
+        <p class="small"><i class="fa-solid fa-envelope text-orange me-2"></i>{{ site.email }}</p>
+        <p class="small"><i class="fa-solid fa-location-dot text-orange me-2"></i>{{ site.address }}</p>
+        <p class="small"><i class="fa-regular fa-clock text-orange me-2"></i>{{ site.opening_hours }}</p>
+        <div class="map-placeholder mt-3"><i class="fa-solid fa-map-location-dot"></i><p>Google Map placeholder</p></div>
+      </div>
+    </div>
+    <div class="col-lg-7">
+      <div class="glass-card p-4">
+        <h5 class="fw-bold mb-3">Send a message</h5>
+        <form method="post" novalidate>
+          {% csrf_token %}
+          {% for field in form %}
+            <div class="mb-3">
+              <label class="form-label">{{ field.label }}</label>
+              {{ field }}
+              {% for error in field.errors %}<div class="text-danger small">{{ error }}</div>{% endfor %}
+            </div>
+          {% endfor %}
+          <button class="btn btn-orange px-4">Send Message</button>
+        </form>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

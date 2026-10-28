@@ -1,0 +1,35 @@
+{% extends "admin_base.html" %}
+{% block breadcrumb %}Reservations{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+  <h4 class="fw-bold mb-0">Reservations</h4>
+  <div class="d-flex gap-2">
+    <a class="btn btn-light" href="{% url 'reservations:calendar' %}"><i class="fa-regular fa-calendar me-2"></i>Calendar</a>
+    <a class="btn btn-orange" href="{% url 'reservations:add' %}"><i class="fa-solid fa-plus me-2"></i>New Reservation</a>
+  </div>
+</div>
+<form class="row g-2 mb-3">
+  <div class="col-md-6"><input class="form-control" name="q" value="{{ query }}" placeholder="Search customer name or mobile"></div>
+  <div class="col-md-4"><select class="form-select" name="status" onchange="this.form.submit()">
+    <option value="">All statuses</option>
+    {% for value, label in statuses %}<option value="{{ value }}" {% if value == status %}selected{% endif %}>{{ label }}</option>{% endfor %}
+  </select></div>
+  <div class="col-md-2 d-grid"><button class="btn btn-orange">Search</button></div>
+</form>
+<div class="card glass-card p-3">
+  <div class="table-responsive"><table class="table align-middle">
+    <thead><tr><th>Customer</th><th>Table</th><th>Date</th><th>Time</th><th>Guests</th><th>Status</th><th></th></tr></thead>
+    <tbody>{% for r in page_obj %}<tr>
+      <td>{{ r.customer.name }}<br><small class="text-muted-2">{{ r.customer.mobile }}</small></td>
+      <td>Table {{ r.table.number }}</td><td>{{ r.date }}</td><td>{{ r.time }}</td><td>{{ r.guests }}</td>
+      <td><span class="badge text-bg-{{ r.badge }}">{{ r.get_status_display }}</span></td>
+      <td class="text-end">
+        <a class="btn btn-sm btn-light" href="{% url 'reservations:edit' r.pk %}"><i class="fa-solid fa-pen"></i></a>
+        {% if r.status != 'cancelled' %}<a class="btn btn-sm btn-outline-warning" href="{% url 'reservations:cancel' r.pk %}">Cancel</a>{% endif %}
+        <a class="btn btn-sm btn-outline-danger" href="{% url 'reservations:delete' r.pk %}"><i class="fa-solid fa-trash"></i></a>
+      </td>
+    </tr>{% empty %}<tr><td colspan="7">{% include "_empty.html" with title="No reservations" %}</td></tr>{% endfor %}</tbody>
+  </table></div>
+  {% include "_pagination.html" %}
+</div>
+{% endblock %}

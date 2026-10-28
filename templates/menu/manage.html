@@ -1,0 +1,37 @@
+{% extends "admin_base.html" %}
+{% block breadcrumb %}Menu{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+  <h4 class="fw-bold mb-0">Menu Items</h4>
+  <div class="d-flex gap-2">
+    <a class="btn btn-light" href="{% url 'menu:categories' %}">Categories</a>
+    <a class="btn btn-orange" href="{% url 'menu:add' %}"><i class="fa-solid fa-plus me-2"></i>Add Food</a>
+  </div>
+</div>
+<form class="row g-2 mb-3">
+  <div class="col-md-5"><input class="form-control" name="q" value="{{ query }}" placeholder="Search food..."></div>
+  <div class="col-md-4"><select class="form-select" name="category" onchange="this.form.submit()">
+    <option value="">All categories</option>
+    {% for c in categories %}<option value="{{ c.slug }}" {% if c.slug == active_category %}selected{% endif %}>{{ c.name }}</option>{% endfor %}
+  </select></div>
+  <div class="col-md-3 d-grid"><button class="btn btn-orange">Filter</button></div>
+</form>
+<div class="card glass-card p-3">
+  <div class="table-responsive"><table class="table align-middle">
+    <thead><tr><th>Image</th><th>Name</th><th>Category</th><th>Price</th><th>Available</th><th></th></tr></thead>
+    <tbody>{% for item in page_obj %}
+      <tr>
+        <td><img src="{{ item.src }}" class="thumb" alt="{{ item.name }}"></td>
+        <td>{{ item.name }}{% if item.is_popular %} <i class="fa-solid fa-fire text-orange"></i>{% endif %}</td>
+        <td>{{ item.category.name }}</td><td>₹{{ item.price }}</td>
+        <td>{% if item.is_available %}<span class="badge text-bg-success">Yes</span>{% else %}<span class="badge text-bg-danger">No</span>{% endif %}</td>
+        <td class="text-end">
+          <a class="btn btn-sm btn-light" href="{% url 'menu:edit' item.pk %}"><i class="fa-solid fa-pen"></i></a>
+          <a class="btn btn-sm btn-outline-danger" href="{% url 'menu:delete' item.pk %}"><i class="fa-solid fa-trash"></i></a>
+        </td>
+      </tr>
+    {% empty %}<tr><td colspan="6">{% include "_empty.html" with title="No food items yet" %}</td></tr>{% endfor %}</tbody>
+  </table></div>
+  {% include "_pagination.html" %}
+</div>
+{% endblock %}

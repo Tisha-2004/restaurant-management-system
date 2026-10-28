@@ -1,0 +1,142 @@
+{% extends "base.html" %}
+{% block title %}{{ site.name }} · {{ site.tagline }}{% endblock %}
+{% block content %}
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-overlay"></div>
+  <div class="container hero-content text-center">
+    <span class="badge-pill fade-up">{{ site.opening_hours }}</span>
+    <h1 class="hero-title fade-up">{{ site.name }}</h1>
+    <p class="hero-sub fade-up">Delicious Food, Crafted Fresh Every Single Day</p>
+    <div class="d-flex gap-3 justify-content-center flex-wrap fade-up">
+      <a href="{% url 'reservations:book' %}" class="btn btn-orange btn-lg px-4"><i class="fa-solid fa-calendar-check me-2"></i>Book Table</a>
+      <a href="{% url 'menu:list' %}" class="btn btn-glass btn-lg px-4"><i class="fa-solid fa-utensils me-2"></i>Explore Menu</a>
+    </div>
+  </div>
+</section>
+
+<!-- CATEGORIES -->
+<section class="container section">
+  <div class="section-head">
+    <h2>What's on your mind?</h2>
+    <p>Browse our most-loved food categories</p>
+  </div>
+  <div class="category-strip">
+    {% for category in categories %}
+      <a class="category-card fade-up" href="{% url 'menu:list' %}?category={{ category.slug }}">
+        <div class="category-img" style="background-image:url('{{ category.image_url }}')">
+          <i class="{{ category.icon }}"></i>
+        </div>
+        <span>{{ category.name }}</span>
+      </a>
+    {% empty %}
+      {% include "_empty.html" with title="No categories yet" %}
+    {% endfor %}
+  </div>
+</section>
+
+<!-- POPULAR FOODS -->
+<section class="section section-gradient">
+  <div class="container">
+    <div class="section-head"><h2>Popular Right Now</h2><p>Handpicked favourites from our kitchen</p></div>
+    <div class="row g-4">
+      {% for item in popular %}
+      <div class="col-lg-3 col-md-6">
+        <div class="food-card fade-up h-100">
+          <div class="food-img" style="background-image:url('{{ item.src }}')">
+            <span class="price-tag">₹{{ item.price }}</span>
+            {% if not item.is_available %}<span class="sold-out">Sold out</span>{% endif %}
+          </div>
+          <div class="food-body">
+            <h5>{{ item.name }}</h5>
+            <p class="small text-muted-2">{{ item.description|truncatechars:70 }}</p>
+            <div class="d-flex justify-content-between align-items-center">
+              <span class="chip">{{ item.category.name }}</span>
+              <a href="{% url 'menu:detail' item.pk %}" class="btn btn-sm btn-orange">View</a>
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+        <div class="col-12">{% include "_empty.html" with title="No popular dishes yet" %}</div>
+      {% endfor %}
+    </div>
+    <div class="text-center mt-4"><a href="{% url 'menu:list' %}" class="btn btn-outline-orange">See full menu</a></div>
+  </div>
+</section>
+
+<!-- ABOUT -->
+<section class="container section">
+  <div class="row align-items-center g-5">
+    <div class="col-lg-6">
+      <img class="rounded-4 shadow-lg w-100" src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=1000&q=80" alt="Restaurant interior">
+    </div>
+    <div class="col-lg-6">
+      <h2 class="fw-bold mb-3">About <span class="text-orange">{{ site.name }}</span></h2>
+      <p class="text-muted-2">We are a family-run kitchen serving comforting classics and bold new flavours.
+        Every dish is prepared with locally sourced ingredients, slow-cooked masalas and a whole lot of heart.</p>
+      <div class="row g-3 mt-2">
+        <div class="col-6"><div class="stat-box"><h4>15+</h4><span>Years of service</span></div></div>
+        <div class="col-6"><div class="stat-box"><h4>120+</h4><span>Signature dishes</span></div></div>
+        <div class="col-6"><div class="stat-box"><h4>40k+</h4><span>Happy guests</span></div></div>
+        <div class="col-6"><div class="stat-box"><h4>4.8★</h4><span>Average rating</span></div></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY -->
+<section class="section section-dark">
+  <div class="container">
+    <div class="section-head light"><h2>From Our Kitchen</h2><p>A glimpse of the food and the vibe</p></div>
+    <div class="row g-3">
+      {% for image in gallery %}
+        <div class="col-md-4 col-6"><div class="gallery-tile" style="background-image:url('{{ image.src }}')"><span>{{ image.title }}</span></div></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- TESTIMONIALS -->
+<section class="container section">
+  <div class="section-head"><h2>What Guests Say</h2><p>Real reviews from our regulars</p></div>
+  <div class="row g-4">
+    {% for testimonial in testimonials %}
+    <div class="col-lg-4 col-md-6">
+      <div class="testimonial-card fade-up h-100">
+        <div class="stars">{% for _ in "12345"|make_list %}<i class="fa-solid fa-star"></i>{% endfor %}</div>
+        <p>"{{ testimonial.message }}"</p>
+        <div class="d-flex align-items-center gap-2 mt-3">
+          <img src="{{ testimonial.avatar_url|default:'https://ui-avatars.com/api/?name=Guest&background=FC8019&color=fff' }}" class="avatar" alt="{{ testimonial.name }}">
+          <div><strong>{{ testimonial.name }}</strong><br><small class="text-muted-2">{{ testimonial.role }}</small></div>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- HOURS + MAP -->
+<section class="container section">
+  <div class="row g-4">
+    <div class="col-lg-5">
+      <div class="glass-card p-4 h-100">
+        <h4 class="fw-bold mb-3"><i class="fa-regular fa-clock text-orange me-2"></i>Opening Hours</h4>
+        <ul class="list-unstyled hours-list">
+          <li><span>Monday - Thursday</span><span>11:00 AM - 11:00 PM</span></li>
+          <li><span>Friday - Saturday</span><span>11:00 AM - 12:30 AM</span></li>
+          <li><span>Sunday</span><span>10:00 AM - 11:00 PM</span></li>
+        </ul>
+        <p class="small text-muted-2 mb-0"><i class="fa-solid fa-location-dot text-orange me-2"></i>{{ site.address }}</p>
+      </div>
+    </div>
+    <div class="col-lg-7">
+      <div class="map-placeholder">
+        <i class="fa-solid fa-map-location-dot"></i>
+        <p>Google Map placeholder — drop your embed iframe here</p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

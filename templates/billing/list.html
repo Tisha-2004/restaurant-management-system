@@ -1,0 +1,36 @@
+{% extends "admin_base.html" %}
+{% block breadcrumb %}Billing{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+  <h4 class="fw-bold mb-0">Bills & Invoices</h4>
+  <a class="btn btn-orange" href="{% url 'billing:add' %}"><i class="fa-solid fa-plus me-2"></i>Generate Bill</a>
+</div>
+<form class="row g-2 mb-3">
+  <div class="col-md-6"><input class="form-control" name="q" value="{{ query }}" placeholder="Search invoice or customer"></div>
+  <div class="col-md-4"><select class="form-select" name="status" onchange="this.form.submit()">
+    <option value="">All payment statuses</option>
+    <option value="paid" {% if status == 'paid' %}selected{% endif %}>Paid</option>
+    <option value="unpaid" {% if status == 'unpaid' %}selected{% endif %}>Unpaid</option>
+  </select></div>
+  <div class="col-md-2 d-grid"><button class="btn btn-orange">Search</button></div>
+</form>
+<div class="card glass-card p-3">
+  <div class="table-responsive"><table class="table align-middle">
+    <thead><tr><th>Invoice</th><th>Customer</th><th>Date</th><th>Method</th><th>Status</th><th class="text-end">Total</th><th></th></tr></thead>
+    <tbody>{% for b in page_obj %}<tr>
+      <td><a href="{% url 'billing:detail' b.pk %}">{{ b.invoice_number }}</a></td>
+      <td>{{ b.customer.name }}</td><td class="small">{{ b.created_at|date:"d M Y H:i" }}</td>
+      <td>{{ b.get_payment_method_display }}</td>
+      <td><span class="badge text-bg-{% if b.payment_status == 'paid' %}success{% else %}warning{% endif %}">{{ b.get_payment_status_display }}</span></td>
+      <td class="text-end fw-semibold">₹{{ b.grand_total }}</td>
+      <td class="text-end">
+        <a class="btn btn-sm btn-light" href="{% url 'billing:detail' b.pk %}"><i class="fa-solid fa-print"></i></a>
+        <a class="btn btn-sm btn-light" href="{% url 'billing:pdf' b.pk %}"><i class="fa-solid fa-file-pdf"></i></a>
+        {% if b.payment_status == 'unpaid' %}<a class="btn btn-sm btn-outline-success" href="{% url 'billing:mark_paid' b.pk %}">Mark paid</a>{% endif %}
+        <a class="btn btn-sm btn-outline-danger" href="{% url 'billing:delete' b.pk %}"><i class="fa-solid fa-trash"></i></a>
+      </td>
+    </tr>{% empty %}<tr><td colspan="7">{% include "_empty.html" with title="No bills yet" %}</td></tr>{% endfor %}</tbody>
+  </table></div>
+  {% include "_pagination.html" %}
+</div>
+{% endblock %}

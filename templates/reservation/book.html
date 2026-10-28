@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Book a Table · {{ site.name }}{% endblock %}
+{% block content %}
+<section class="page-header"><div class="container"><h1>Book a Table</h1><p>Reserve your spot in a few clicks</p></div></section>
+<section class="container section">
+  <div class="glass-card p-4 mx-auto" style="max-width:680px">
+    <form method="post" novalidate>{% csrf_token %}
+      <div class="row g-3">
+        {% for field in form %}<div class="col-md-6"><label class="form-label">{{ field.label }}</label>{{ field }}
+          {% for e in field.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}</div>{% endfor %}
+      </div>
+      {% if form.non_field_errors %}<div class="alert alert-danger mt-3 py-2 small">{{ form.non_field_errors.0 }}</div>{% endif %}
+      <button class="btn btn-orange w-100 mt-4">Confirm Reservation</button>
+    </form>
+  </div>
+</section>
+{% endblock %}

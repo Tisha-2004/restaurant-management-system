@@ -1,0 +1,27 @@
+{% extends "admin_base.html" %}
+{% block breadcrumb %}{{ title }}{% endblock %}
+{% block content %}
+<div class="card glass-card p-4" style="max-width:900px">
+  <h4 class="fw-bold mb-3">{{ title }}</h4>
+  <form method="post" novalidate>{% csrf_token %}
+    <div class="row g-3">
+      {% for field in form %}<div class="col-md-4"><label class="form-label">{{ field.label }}</label>{{ field }}
+        {% for e in field.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}</div>{% endfor %}
+    </div>
+    <h6 class="fw-bold mt-4">Bill items</h6>
+    {{ formset.management_form }}
+    <table class="table align-middle">
+      <thead><tr><th>Item</th><th style="width:110px">Qty</th><th style="width:140px">Price (₹)</th><th style="width:90px">Remove</th></tr></thead>
+      <tbody>{% for sub in formset %}<tr>
+        {{ sub.id }}
+        <td>{{ sub.item }}{% for e in sub.item.errors %}<div class="text-danger small">{{ e }}</div>{% endfor %}</td>
+        <td>{{ sub.quantity }}</td>
+        <td>{{ sub.price }}<div class="form-text">Leave blank to use menu price</div></td>
+        <td>{% if sub.instance.pk %}{{ sub.DELETE }}{% endif %}</td>
+      </tr>{% endfor %}</tbody>
+    </table>
+    <div class="d-flex gap-2"><button class="btn btn-orange">Save Bill</button>
+      <a class="btn btn-light" href="{% url 'billing:list' %}">Cancel</a></div>
+  </form>
+</div>
+{% endblock %}

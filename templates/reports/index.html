@@ -1,0 +1,31 @@
+{% extends "admin_base.html" %}
+{% block breadcrumb %}Reports{% endblock %}
+{% block content %}
+<h4 class="fw-bold mb-3">Reports</h4>
+<form class="row g-2 mb-3">
+  <div class="col-md-3"><select class="form-select" name="type">
+    {% for value, label in types %}<option value="{{ value }}" {% if value == kind %}selected{% endif %}>{{ label }}</option>{% endfor %}
+  </select></div>
+  <div class="col-md-3"><input type="date" class="form-control" name="start" value="{{ start|date:'Y-m-d' }}"></div>
+  <div class="col-md-3"><input type="date" class="form-control" name="end" value="{{ end|date:'Y-m-d' }}"></div>
+  <div class="col-md-3 d-flex gap-2">
+    <button class="btn btn-orange flex-fill">Generate</button>
+    <button class="btn btn-light" name="export" value="csv">CSV</button>
+    <button class="btn btn-light" name="export" value="pdf">PDF</button>
+  </div>
+</form>
+
+<div class="row g-3 mb-3">
+  {% for label, value in summary.items %}
+    <div class="col-md-3"><div class="stat-card"><i class="fa-solid fa-chart-simple"></i><div><h3>{{ value }}</h3><span>{{ label }}</span></div></div></div>
+  {% endfor %}
+</div>
+
+<div class="card glass-card p-3">
+  <div class="table-responsive"><table class="table align-middle">
+    <thead><tr>{% for h in headers %}<th>{{ h }}</th>{% endfor %}</tr></thead>
+    <tbody>{% for row in rows %}<tr>{% for cell in row %}<td>{{ cell }}</td>{% endfor %}</tr>
+    {% empty %}<tr><td colspan="{{ headers|length }}">{% include "_empty.html" with title="No data for this period" %}</td></tr>{% endfor %}</tbody>
+  </table></div>
+</div>
+{% endblock %}

@@ -1,0 +1,63 @@
+{% extends "admin_base.html" %}
+{% block breadcrumb %}Overview{% endblock %}
+{% block content %}
+<h4 class="fw-bold mb-3">Welcome back, {{ user.first_name|default:user.username }} 👋</h4>
+
+<div class="row g-3 mb-4">
+  <div class="col-xl-3 col-md-6"><div class="stat-card"><i class="fa-solid fa-users"></i><div><h3>{{ total_customers }}</h3><span>Total Customers</span></div></div></div>
+  <div class="col-xl-3 col-md-6"><div class="stat-card info"><i class="fa-solid fa-bowl-food"></i><div><h3>{{ orders_today }}</h3><span>Today's Orders</span></div></div></div>
+  <div class="col-xl-3 col-md-6"><div class="stat-card warning"><i class="fa-solid fa-calendar-check"></i><div><h3>{{ reservations_today }}</h3><span>Today's Reservations</span></div></div></div>
+  <div class="col-xl-3 col-md-6"><div class="stat-card success"><i class="fa-solid fa-indian-rupee-sign"></i><div><h3>₹{{ revenue_today }}</h3><span>Revenue Today</span></div></div></div>
+  <div class="col-xl-3 col-md-6"><div class="stat-card success"><i class="fa-solid fa-circle-check"></i><div><h3>{{ tables_available }}</h3><span>Available Tables</span></div></div></div>
+  <div class="col-xl-3 col-md-6"><div class="stat-card danger"><i class="fa-solid fa-user-group"></i><div><h3>{{ tables_occupied }}</h3><span>Occupied Tables</span></div></div></div>
+  <div class="col-xl-3 col-md-6"><div class="stat-card warning"><i class="fa-solid fa-clock"></i><div><h3>{{ tables_reserved }}</h3><span>Reserved Tables</span></div></div></div>
+  <div class="col-xl-3 col-md-6"><div class="stat-card"><i class="fa-solid fa-sack-dollar"></i><div><h3>₹{{ revenue_total }}</h3><span>Total Revenue</span></div></div></div>
+</div>
+
+<div class="row g-3 mb-4">
+  <div class="col-lg-7"><div class="card glass-card p-3"><h6 class="fw-bold">Monthly Revenue</h6><canvas id="revenueChart" height="130"></canvas></div></div>
+  <div class="col-lg-5"><div class="card glass-card p-3"><h6 class="fw-bold">Orders vs Reservations</h6><canvas id="activityChart" height="170"></canvas></div></div>
+</div>
+
+<div class="row g-3">
+  <div class="col-lg-7"><div class="card glass-card p-3">
+    <h6 class="fw-bold">Recent Orders</h6>
+    <table class="table table-sm align-middle mb-0">
+      <thead><tr><th>Order</th><th>Customer</th><th>Table</th><th>Status</th></tr></thead>
+      <tbody>{% for o in recent_orders %}<tr><td>{{ o.number }}</td><td>{{ o.customer.name }}</td>
+        <td>{% if o.table %}T{{ o.table.number }}{% else %}—{% endif %}</td>
+        <td><span class="badge text-bg-{{ o.badge }}">{{ o.get_status_display }}</span></td></tr>
+      {% empty %}<tr><td colspan="4" class="text-muted-2 small">No orders yet.</td></tr>{% endfor %}</tbody>
+    </table>
+  </div></div>
+  <div class="col-lg-5"><div class="card glass-card p-3">
+    <h6 class="fw-bold">Upcoming Reservations</h6>
+    <table class="table table-sm align-middle mb-0">
+      <tbody>{% for r in recent_reservations %}<tr><td>{{ r.date }} {{ r.time|time:"H:i" }}</td>
+        <td>{{ r.customer.name|truncatechars:14 }}</td><td>T{{ r.table.number }}</td>
+        <td><span class="badge text-bg-{{ r.badge }}">{{ r.get_status_display }}</span></td></tr>
+      {% empty %}<tr><td class="text-muted-2 small">No reservations.</td></tr>{% endfor %}</tbody>
+    </table>
+  </div></div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+  // Dashboard charts (Chart.js) fed by JSON produced in dashboard/views.py
+  const labels = {{ chart_labels|safe }};
+  new Chart(document.getElementById('revenueChart'), {
+    type: 'line',
+    data: { labels, datasets: [{ label: 'Revenue (₹)', data: {{ chart_revenue|safe }},
+      borderColor: '#FC8019', backgroundColor: 'rgba(252,128,25,.18)', fill: true, tension: .35 }] },
+    options: { plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true } } }
+  });
+  new Chart(document.getElementById('activityChart'), {
+    type: 'bar',
+    data: { labels, datasets: [
+      { label: 'Orders', data: {{ chart_orders|safe }}, backgroundColor: '#FC8019' },
+      { label: 'Reservations', data: {{ chart_reservations|safe }}, backgroundColor: '#2b2b2b' }] },
+    options: { scales: { y: { beginAtZero: true } } }
+  });
+</script>
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "admin_base.html" %}
+{% block breadcrumb %}Customers{% endblock %}
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
+  <h4 class="fw-bold mb-0">Customers</h4>
+  <div class="d-flex gap-2">
+    <form class="d-flex gap-2"><input class="form-control" name="q" value="{{ query }}" placeholder="Search name, mobile, email"><button class="btn btn-light">Search</button></form>
+    <a class="btn btn-orange" href="{% url 'customers:add' %}"><i class="fa-solid fa-plus me-2"></i>Add Customer</a>
+  </div>
+</div>
+<div class="card glass-card p-3">
+  <div class="table-responsive"><table class="table align-middle">
+    <thead><tr><th>Name</th><th>Mobile</th><th>Email</th><th>Joined</th><th></th></tr></thead>
+    <tbody>{% for c in page_obj %}<tr>
+      <td><a href="{% url 'customers:detail' c.pk %}">{{ c.name }}</a></td>
+      <td>{{ c.mobile }}</td><td>{{ c.email }}</td><td>{{ c.date_joined|date:"d M Y" }}</td>
+      <td class="text-end">
+        <a class="btn btn-sm btn-light" href="{% url 'customers:edit' c.pk %}"><i class="fa-solid fa-pen"></i></a>
+        <a class="btn btn-sm btn-outline-danger" href="{% url 'customers:delete' c.pk %}"><i class="fa-solid fa-trash"></i></a>
+      </td>
+    </tr>{% empty %}<tr><td colspan="5">{% include "_empty.html" with title="No customers yet" %}</td></tr>{% endfor %}</tbody>
+  </table></div>
+  {% include "_pagination.html" %}
+</div>
+{% endblock %}

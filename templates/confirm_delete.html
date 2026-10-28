@@ -1,0 +1,13 @@
+{% extends "admin_base.html" %}
+{% block breadcrumb %}Delete{% endblock %}
+{% block content %}
+<div class="card glass-card p-4 mx-auto" style="max-width:520px">
+  <h4 class="fw-bold mb-3"><i class="fa-solid fa-triangle-exclamation text-danger me-2"></i>Confirm delete</h4>
+  <p>Are you sure you want to delete <strong>{{ object }}</strong>? This action cannot be undone.</p>
+  <form method="post" class="d-flex gap-2">
+    {% csrf_token %}
+    <button class="btn btn-danger">Yes, delete</button>
+    <a class="btn btn-light" href="{% url back_url %}">Cancel</a>
+  </form>
+</div>
+{% endblock %}

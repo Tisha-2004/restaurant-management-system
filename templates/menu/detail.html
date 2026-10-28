@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}{{ item.name }} · {{ site.name }}{% endblock %}
+{% block content %}
+<section class="container section">
+  <nav><ol class="breadcrumb small"><li class="breadcrumb-item"><a href="{% url 'core:home' %}">Home</a></li>
+    <li class="breadcrumb-item"><a href="{% url 'menu:list' %}">Menu</a></li>
+    <li class="breadcrumb-item active">{{ item.name }}</li></ol></nav>
+  <div class="row g-4">
+    <div class="col-lg-6"><div class="food-img detail" style="background-image:url('{{ item.src }}')"></div></div>
+    <div class="col-lg-6">
+      <span class="chip">{{ item.category.name }}</span>
+      <h1 class="fw-bold mt-2">{{ item.name }}</h1>
+      <h3 class="text-orange">₹{{ item.price }}</h3>
+      <p class="text-muted-2">{{ item.description }}</p>
+      <p>{% if item.is_available %}<span class="badge text-bg-success">Available</span>{% else %}<span class="badge text-bg-danger">Currently unavailable</span>{% endif %}</p>
+      <a class="btn btn-orange" href="{% url 'reservations:book' %}">Book a table</a>
+    </div>
+  </div>
+  {% if related %}
+  <h4 class="fw-bold mt-5 mb-3">You may also like</h4>
+  <div class="row g-4">{% for r in related %}
+    <div class="col-lg-3 col-md-6"><div class="food-card h-100">
+      <div class="food-img" style="background-image:url('{{ r.src }}')"><span class="price-tag">₹{{ r.price }}</span></div>
+      <div class="food-body"><h6>{{ r.name }}</h6><a class="btn btn-sm btn-orange" href="{% url 'menu:detail' r.pk %}">View</a></div>
+    </div></div>{% endfor %}</div>
+  {% endif %}
+</section>
+{% endblock %}
